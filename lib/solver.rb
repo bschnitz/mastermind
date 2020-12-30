@@ -55,11 +55,11 @@ class Solver
   def filter_possibile_colors!(possibilities)
     possibilities.map! do |possibility|
       possibility.map! do |colors|
-        colors.filter { |color| @possible_colors.include?(color) }
+        colors.select { |color| @possible_colors.include?(color) }
       end
-      possibility.filter { |el| !el.empty? }
+      possibility.select { |el| !el.empty? }
     end
-    possibilities.filter! { |possibility| possibility.length == 4 }
+    possibilities.select! { |possibility| possibility.length == 4 }
   end
 
   def merge_possibilities(possibilities)
@@ -114,7 +114,7 @@ class Solver
     current_colors = @guesses[-1].uniq
     other_colors = @possible_colors - current_colors
     possibilities.each do |pos|
-      colors = pos.filter { |el| el }
+      colors = pos.select { |el| el }
       pos.map!.with_index do |el, i|
         if el
           [el]
@@ -187,7 +187,7 @@ class Solver
       dissolved = dissolve(ps)
       if dissolved.include?(possibility)
         filtered_p = dissolve(ps)
-                     .filter { |p| p != possibility }
+                     .select { |p| p != possibility }
                      .map { |p| p.map { |color| [color] } }
         pss.push(*filtered_p)
       else

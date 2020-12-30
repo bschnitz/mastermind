@@ -132,7 +132,7 @@ class Mastermind
     choices = input.split(/\s+/).map do |choice|
       @colors_str.bsearch { |x| x.match?(/^#{choice}/) ? 0 : choice <=> x }
     end
-    choices.filter { |el| el }.map(&:to_sym)
+    choices.select { |el| el }.map(&:to_sym)
   end
 
   def color_choice_str
