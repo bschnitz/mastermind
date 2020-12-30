@@ -61,7 +61,7 @@ class Mastermind
 
     @board.code = colors
 
-    solver = Solver.new(@board, true)
+    solver = Solver.new(@board)
     solver.solve
 
     @board_printer.print
