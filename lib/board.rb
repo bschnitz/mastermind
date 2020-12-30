@@ -5,7 +5,7 @@ require_relative './helpers'
 
 # The board represents the state of the Mastermind game
 class Board
-  attr_reader :rows, :number_of_pegs, :guessed_correctly, :current_row
+  attr_reader :rows, :number_of_pegs, :guessed_correctly, :current_row, :colors
   attr_accessor :code
 
   def initialize(colors, number_of_pegs)
@@ -13,7 +13,9 @@ class Board
     @number_of_rows = 12
 
     @colors = colors
+  end
 
+  def reset
     @current_row = 0
 
     @guessed_correctly = false
@@ -42,7 +44,7 @@ class Board
     end
 
     @rows[@current_row][:code_peg_colors] = colors
-    @rows[@current_row][:key_peg_colors] = key_peg_colors(colors)
+    @rows[@current_row][:key_peg_colors] = get_key_peg_colors(colors)
 
     @guessed_correctly = @rows[@current_row][:key_peg_colors].all? do |color|
       color == :red
@@ -59,7 +61,11 @@ class Board
     @current_row >= @number_of_rows
   end
 
-  def key_peg_colors(guessed_colors)
+  def key_peg_colors(row = nil)
+    @rows[row || @current_row][:key_peg_colors]
+  end
+
+  def get_key_peg_colors(guessed_colors)
     correct_guesses, other_pegs = @code.partition.with_index do |color, i|
       guessed_colors[i] == color
     end

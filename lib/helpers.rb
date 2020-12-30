@@ -47,3 +47,31 @@ def minimum_unique_start_lengths(arr_of_str)
 
   unique_lengths
 end
+
+# returns all subsets of arr, which have num elements
+def draw_k(arr, num)
+  return [] if num.zero?
+  return arr.map { |el| [el] } if num == 1
+
+  (0..(arr.length - num)).reduce([]) do |pot, i|
+    pot
+      .push(*(draw_k(arr[i + 1..-1], num - 1)
+      .map { |perm| perm.unshift(arr[i]) }))
+  end
+end
+
+# returns all bijection of positions to itself where no entry in positions is
+# mapped to itself. The bijections are returned as array of hashes.
+def identity_free_bijections(positions, free_positions = positions)
+  return [{}] if positions.empty?
+
+  (free_positions - [positions[0]]).each_with_object([]) do |pos, bijections|
+    identity_free_bijections(
+      positions - [positions[0]],
+      free_positions - [pos]
+    ).each do |bijection|
+      bijection[positions[0]] = pos
+      bijections.push(bijection)
+    end
+  end
+end

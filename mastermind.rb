@@ -3,6 +3,7 @@
 require_relative './lib/board_printer'
 require_relative './lib/board'
 require_relative './lib/color'
+require_relative './lib/solver'
 
 # controls the game (board, user interaction, ai)
 class Mastermind
@@ -27,13 +28,68 @@ class Mastermind
     @underlined.underlined = true
   end
 
+  def start_game
+    player = %i[computer human].sample
+    loop do
+      return unless execute(player)
+
+      print @reset
+      puts "Press 'q' to quit or any other key to start next round."
+      input = gets.chomp
+      return if input.downcase == 'q'
+
+      player = player == :human ? :computer : :human
+    end
+  end
+
+  def execute(player_type)
+    @board.reset
+
+    if player_type == :computer
+      puts 'Computers turn'
+      computers_turn
+    else
+      puts 'Your turn'
+      game_loop
+    end
+  end
+
+  def computers_turn
+    colors = colors_for_computer_game
+
+    return nil unless @colors
+
+    @board.code = colors
+
+    solver = Solver.new(@board, true)
+    solver.solve
+
+    @board_printer.print
+    true
+  end
+
+  def colors_for_computer_game
+    loop do
+      puts "\nProvide #{@board.number_of_pegs} colors for the computer."\
+        ' Input them seperated by spaces.'
+      puts "Possible choices: #{@color_choice_str}\n'q' for Quit"
+
+      return nil unless (choices = chosen_colors_from_user_input)
+      return choices if choices.length == @board.number_of_pegs
+
+      puts "Wrong input, got: #{choices}"
+    end
+  end
+
   def game_loop
     until no_more_guesses? || guessed_correctly?
       @board_printer.print
-      return unless (guessed_colors = user_input_loop)
+      return nil unless (guessed_colors = user_input_loop)
 
       @board.guess(guessed_colors)
     end
+
+    true
   end
 
   def guessed_correctly?
@@ -90,4 +146,4 @@ class Mastermind
   end
 end
 
-Mastermind.new.game_loop
+Mastermind.new.start_game
